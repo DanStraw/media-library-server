@@ -7,9 +7,35 @@ const MovieSchema = new Schema({
     required: true,
     trim: true
   },
-  format: {
+  movieDBID: {
+    type: Number,
+    unique: true
+  },
+  adult: {
+    type: Boolean
+  },
+  image: {
     type: String
   },
-})
+  summary: {
+    type: String
+  },
+  rating: {
+    type: Number
+  },
+  release_date: {
+    type: String
+  }
+  // createdAt: {
+  //   type: Number,
+  //   default: Date.now()
+  // },
+  // updatedAt: {
+  //   type: Number,
+  //   default: Date.now()
+  // },
+
+},
+)
 
 module.exports = mongoose.model("Movie", MovieSchema, "movies")

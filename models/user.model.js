@@ -1,8 +1,9 @@
 const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
 const validator = require('validator');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
-const UserSchema = new Schema({
+const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -35,6 +36,71 @@ const UserSchema = new Schema({
       }
     }
   },
-})
+  tokens: [{
+    token: {
+      type: String,
+      required: true
+    }
+  }],
+  movies: [
+    {
+      itemInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'Movie' },
+      viewCount: {
+        type: Number,
+        default: 0,
+      },
+      updated_at: {
+        type: Number
+      },
+      format: {
+        type: String
+      }
+    }
+  ]
+},
+  {
+    timestamps: true
+  }
+)
 
-module.exports = mongoose.model("User", UserSchema, "users")
+userSchema.methods.getPublicProfile = async function () {
+  const user = this;
+  const userObject = user.toObject();
+  delete userObject.password;
+  delete userObject.tokens;
+  return userObject;
+}
+
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET);
+  user.tokens = user.tokens.concat({ token });
+  await user.save();
+  return token;
+}
+
+userSchema.statics.findByCredentials = async (email, password) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error('Unable to log in');
+  }
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new Error('Unable to log in!');
+  }
+  return user;
+}
+
+userSchema.pre('save', async function (next) {
+  const user = this;
+
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+
+  next();
+});
+
+const User = mongoose.model("User", userSchema, "users");
+
+module.exports = User;

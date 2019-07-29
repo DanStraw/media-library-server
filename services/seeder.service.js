@@ -1,9 +1,8 @@
 const faker = require('faker')
 const Movie = require('../models/movie.model')
-const config = require('../config/index')
 
 module.exports = {
-  seedData () {
+  seedData() {
     Movie.countDocuments((err, count) => {
       if (count > 0) {
         return;
@@ -12,10 +11,10 @@ module.exports = {
       this.createMovies()
     })
   },
-  createMovies () {
+  createMovies() {
     let movies = [];
 
-    Array.from(Array(config.numberOfMovies)).forEach(() => {
+    Array.from(Array(process.env.numberOfMovies)).forEach(() => {
       movies.push({
         title: faker.lorem.sentence(6),
         format: faker.lorem.sentence(2)
