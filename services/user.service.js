@@ -20,7 +20,7 @@ module.exports = {
   },
   getById(req, res) {
     User.findOne({ _id: req.params.id })
-      .populate({ path: 'movies.itemInfo' })
+      .populate({ path: `${req.params.type}.itemInfo` })
       .exec(async (err, user) => {
         user = await user.getPublicProfile()
         this._handleResponse(err, user, res)
@@ -37,12 +37,10 @@ module.exports = {
     }
   },
   async logoutUser(req, res) {
-
+    const user = await User.findById(req.body.user._id)
     try {
-      req.user.tokens = req.user.tokens.filter((token) => {
-        token.token !== req.token;
-      })
-      await req.user.save();
+      user.tokens = user.tokens.filter((token) => token.token !== req.body.token)
+      await user.save();
       res.send();
     } catch (e) {
       res.status(500).send();

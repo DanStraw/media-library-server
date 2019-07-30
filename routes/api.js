@@ -14,7 +14,7 @@ router.post('/users', userService.createUser.bind(userService));
 router.get('/users', userService.getAll.bind(userService));
 router.post('/user/login', userService.loginUser.bind(userService));
 router.post('/user/logout', auth, userService.logoutUser.bind(userService));
-router.get('/users/:id', userService.getById.bind(userService))
+router.get('/users/:id/:type', userService.getById.bind(userService))
 router.patch('/users/movieUpdate', userService.updateMovieViewCount.bind(userService))
 
 module.exports = router
