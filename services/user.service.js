@@ -14,9 +14,14 @@ module.exports = {
     }
   },
   getAll(req, res) {
-    User.find({}, 'username', (err, users) => {
-      this._handleResponse(err, users, res)
+    try {
+      User.find({}, 'username email', (err, users) => {
+        this._handleResponse(err, users, res)
     })
+    } catch (e) {
+      res.status(400).send(e);
+    }
+    
   },
   getById(req, res) {
     if (req.params.type === 'all') {
@@ -56,36 +61,39 @@ module.exports = {
     }
   },
   async addMovieToUser(req, res) {
-    const userMovie = {
-      itemInfo: req.body.movie_id,
-      format: req.body.format,
-      updated_at: new Date().getTime()
+    try {
+      const userMovie = {
+        itemInfo: req.body.movie_id,
+        format: req.body.format,
+        updated_at: new Date().getTime()
+      }
+      const user = await User.findOne({ _id: req.body.user._id })
+      user.movies.push(userMovie)
+      user.save()
+      res.status(201).send(user)
+    } catch (e) {
+      return res.status(500).send(e)
     }
-    const user = await User.findOne({ _id: req.body.user._id })
-    user.movies.push(userMovie)
-    user.save()
   },
   async updateMovieViewCount(req, res) {
-    const user = await User.findByIdAndUpdate(req.body.user._id)
-    user.movies.forEach((movie, i) => {
-      if (movie._id == req.body.movieId) {
-        user.movies[i].viewCount++;
-        user.movies[i].updated_at = new Date().getTime();
-      }
-    })
-    user.save()
-    return res.status(201).send(user)
+    try {
+      const user = await User.findByIdAndUpdate(req.body.user._id)
+      user.movies.forEach((movie, i) => {
+        if (movie._id == req.body.movieId) {
+          user.movies[i].viewCount++;
+          user.movies[i].updated_at = new Date().getTime();
+        }
+        user.save()
+        return res.status(201).send(user)
+      })
+    } catch (e) {
+      return res.status(500).send(e)
+    }
   },
   async deleteMovie(req, res) {
-    const user = await User.findById(req.body.user._id)
-    const movieId = req.body.movieId
-    user.movies.forEach((movie, i) => {
-      if (movie._id == movieId) {
-        user.movies.splice(i, 1)
-      }
-    })
-    user.save()
-    res.send(user)
+    req.body.user.movies = req.body.user.movies.filter(movie => movie._id != req.body.movieId)
+    req.body.user.save()
+    res.send(req.body.user)
   },
   _handleResponse(err, data, res) {
     if (err) {

@@ -1,27 +1,33 @@
 const Movie = require('../models/movie.model')
 
 module.exports = {
-  addMovie(req, res, next) {
-    const movie = new Movie({
-      movieDBID: req.body.movie.id,
-      adult: req.body.movie.adult,
-      title: req.body.movie.title,
-      image: req.body.movie.poster_path,
-      summary: req.body.movie.overview,
-      rating: req.body.movie.vote_average,
-      release_date: req.body.movie.release_date
-    })
-    try {
-      movie.save(err => {
-        if (err) {
-          return res.status(500).send(err)
-        }
-        req.body.movie_id = movie._id
-        res.status(200).send(movie)
-        next()
+  async addMovie(req, res, next) {
+    let movie = await Movie.findOne({ movieDBID: req.body.movie.id})
+    if (movie) {
+      req.body.movie_id = movie._id
+      next()
+    } else {
+      movie = new Movie({
+        movieDBID: req.body.movie.id,
+        adult: req.body.movie.adult,
+        title: req.body.movie.title,
+        image: req.body.movie.poster_path,
+        summary: req.body.movie.overview,
+        rating: req.body.movie.vote_average,
+        release_date: req.body.movie.release_date
       })
-    } catch (e) {
-      res.status(400).send();
+      try {
+        movie.save(err => {
+          if (err) {
+            return res.status(500).send(err)
+          }
+          req.body.movie_id = movie._id
+          res.status(200).send(movie)
+          next()
+        })
+      } catch (e) {
+        res.status(400).send();
+      }
     }
   },
   getAll(req, res) {
