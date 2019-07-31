@@ -16,5 +16,6 @@ router.post('/user/login', userService.loginUser.bind(userService));
 router.post('/user/logout', auth, userService.logoutUser.bind(userService));
 router.get('/users/:id/:type', userService.getById.bind(userService))
 router.patch('/users/movieUpdate', userService.updateMovieViewCount.bind(userService))
+router.delete('/user/movieDelete', auth, userService.deleteMovie.bind(userService))
 
 module.exports = router

@@ -19,12 +19,21 @@ module.exports = {
     })
   },
   getById(req, res) {
-    User.findOne({ _id: req.params.id })
+    if (req.params.type === 'all') {
+      User.findOne({ _id: req.params.id })
+      .populate({ path: `movies.itemInfo` }) //add populate of other libraries here to getAll libraries
+      .exec(async (err, user) => {
+        user = await user.getPublicProfile()
+        this._handleResponse(err, user, res)
+      })
+    } else {
+      User.findOne({ _id: req.params.id })
       .populate({ path: `${req.params.type}.itemInfo` })
       .exec(async (err, user) => {
         user = await user.getPublicProfile()
         this._handleResponse(err, user, res)
       })
+    }
   },
   async loginUser(req, res) {
     try {
@@ -66,6 +75,17 @@ module.exports = {
     })
     user.save()
     return res.status(201).send(user)
+  },
+  async deleteMovie(req, res) {
+    const user = await User.findById(req.body.user._id)
+    const movieId = req.body.movieId
+    user.movies.forEach((movie, i) => {
+      if (movie._id == movieId) {
+        user.movies.splice(i, 1)
+      }
+    })
+    user.save()
+    res.send(user)
   },
   _handleResponse(err, data, res) {
     if (err) {
