@@ -77,17 +77,17 @@ module.exports = {
   },
   async updateMovieViewCount(req, res) {
     try {
-      const user = await User.findByIdAndUpdate(req.body.user._id)
-      user.movies.forEach((movie, i) => {
+      const user = await User.findById(req.body.user._id)
+      user.movies.forEach((movie, i) => {   
         if (movie._id == req.body.movieId) {
           user.movies[i].viewCount++;
           user.movies[i].updated_at = new Date().getTime();
-        }
-        user.save()
-        return res.status(201).send(user)
+        }   
       })
+      user.save()
+      res.status(201).send(user)
     } catch (e) {
-      return res.status(500).send(e)
+      res.status(500).send(e)
     }
   },
   async deleteMovie(req, res) {
@@ -97,7 +97,7 @@ module.exports = {
   },
   _handleResponse(err, data, res) {
     if (err) {
-      res.status(400).end()
+      res.status(400).send()
     } else {
       res.send(data)
     }

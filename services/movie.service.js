@@ -22,7 +22,6 @@ module.exports = {
             return res.status(500).send(err)
           }
           req.body.movie_id = movie._id
-          res.status(200).send(movie)
           next()
         })
       } catch (e) {
