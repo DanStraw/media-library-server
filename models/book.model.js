@@ -1,18 +1,21 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const MovieSchema = new Schema({
+const BookSchema = new Schema({
   title: {
     type: String,
     required: true,
     trim: true
   },
-  movieDBID: {
-    type: Number,
+  authors: {
+    type: Array
+  },
+  bookDBID: {
+    type: String,
     unique: true
   },
-  adult: {
-    type: Boolean
+  genres: {
+    type: Array
   },
   image: {
     type: String
@@ -25,8 +28,14 @@ const MovieSchema = new Schema({
   },
   release_date: {
     type: String
+  },
+  page_count: {
+    type: Number
+  },
+  mature_rating: {
+    type: String
   }
 },
 )
 
-module.exports = mongoose.model("Movie", MovieSchema, "movies")
+module.exports = mongoose.model("Book", BookSchema, "books")

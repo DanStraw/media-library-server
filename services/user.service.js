@@ -17,27 +17,35 @@ module.exports = {
     try {
       User.find({}, 'username email', (err, users) => {
         this._handleResponse(err, users, res)
-    })
+      })
     } catch (e) {
       res.status(400).send(e);
     }
-    
+
   },
-  getById(req, res) {
+  async getById(req, res) {
     if (req.params.type === 'all') {
       User.findOne({ _id: req.params.id })
-      .populate({ path: `movies.itemInfo` }) //add populate of other libraries here to getAll libraries
-      .exec(async (err, user) => {
-        user = await user.getPublicProfile()
-        this._handleResponse(err, user, res)
-      })
+        .populate({ path: `movies.itemInfo` }) //add populate of other libraries here to getAll libraries
+        .exec(async (err, user) => {
+          user = await user.getPublicProfile()
+          this._handleResponse(err, user, res)
+        })
     } else {
-      User.findOne({ _id: req.params.id })
-      .populate({ path: `${req.params.type}.itemInfo` })
-      .exec(async (err, user) => {
+      let user = await User.findById(req.params.id)
+      if (user[req.params.type].length === 0) {
         user = await user.getPublicProfile()
-        this._handleResponse(err, user, res)
-      })
+        return res.send(user)
+      } else {
+        User.findOne({ _id: req.params.id })
+          .populate({ path: `${req.params.type}.itemInfo` })
+          .exec(async (err, user) => {
+            user = await user.getPublicProfile()
+            console.log('pubUser:', user)
+            this._handleResponse(err, user, res)
+          })
+      }
+
     }
   },
   async loginUser(req, res) {
@@ -75,14 +83,29 @@ module.exports = {
       return res.status(500).send(e)
     }
   },
+  async addBookToUser(req, res) {
+    try {
+      const userBook = {
+        itemInfo: req.body.book_id,
+        format: req.body.format,
+        updated_at: new Date().getTime()
+      }
+      const user = await User.findOne({ _id: req.body.user._id })
+      user.books.push(userBook)
+      user.save()
+      res.status(201).send(user)
+    } catch (e) {
+      return res.status(500).send(e)
+    }
+  },
   async updateMovieViewCount(req, res) {
     try {
       const user = await User.findById(req.body.user._id)
-      user.movies.forEach((movie, i) => {   
+      user.movies.forEach((movie, i) => {
         if (movie._id == req.body.movieId) {
           user.movies[i].viewCount++;
           user.movies[i].updated_at = new Date().getTime();
-        }   
+        }
       })
       user.save()
       res.status(201).send(user)

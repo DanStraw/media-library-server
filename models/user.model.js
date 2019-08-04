@@ -56,6 +56,21 @@ const userSchema = new mongoose.Schema({
         type: String
       }
     }
+  ],
+  books: [
+    {
+      itemInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'Book' },
+      readCount: {
+        type: Number,
+        default: 0,
+      },
+      updated_at: {
+        type: Number
+      },
+      format: {
+        type: String
+      }
+    }
   ]
 },
   {
