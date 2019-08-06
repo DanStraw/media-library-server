@@ -20,7 +20,6 @@ module.exports = {
         mature_rating: req.body.book.maturityRating
       })
       try {
-        console.log('book:', book)
         book.save(err => {
           if (err) {
             return res.status(500).send(err)
