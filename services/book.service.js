@@ -1,4 +1,5 @@
 const Book = require('../models/book.model')
+const User = require('../models/user.model')
 
 module.exports = {
   async addBook(req, res, next) {
@@ -31,6 +32,8 @@ module.exports = {
         res.status(400).send();
       }
     }
+  },
+  async updateBookReadCount(req, res) {
 
   }
 }

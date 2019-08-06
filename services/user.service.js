@@ -37,11 +37,11 @@ module.exports = {
         user = await user.getPublicProfile()
         return res.send(user)
       } else {
+
         User.findOne({ _id: req.params.id })
           .populate({ path: `${req.params.type}.itemInfo` })
           .exec(async (err, user) => {
             user = await user.getPublicProfile()
-            console.log('pubUser:', user)
             this._handleResponse(err, user, res)
           })
       }
@@ -113,10 +113,39 @@ module.exports = {
       res.status(500).send(e)
     }
   },
+  async updateCount(req, res) {
+    try {
+      const _item_id = req.body._item_id
+      const media_type = req.body.media_type
+      const user = await User.findById(req.body._user_id)
+      user[media_type].forEach((item, i) => {
+        if (_item_id == item._id) {
+          user[media_type][i][`${req.body.media_action}Count`]++;
+          user[media_type][i].updated_at = new Date().getTime();
+        }
+      })
+      user.save()
+      return res.send(user)
+    } catch (e) {
+      return res.status(500).send(e)
+    }
+  },
   async deleteMovie(req, res) {
     req.body.user.movies = req.body.user.movies.filter(movie => movie._id != req.body.movieId)
     req.body.user.save()
     res.send(req.body.user)
+  },
+  async deleteItem(req, res) {
+    try {
+      const _item_id = req.body._item_id
+      const media_type = req.body.media_type
+      let user = await User.findById(req.body.user._id)
+      user[media_type] = user[media_type].filter(item => item._id != _item_id)
+      user.save()
+      res.send(user)
+    } catch (e) {
+      return res.status(500).send(e)
+    }
   },
   _handleResponse(err, data, res) {
     if (err) {

@@ -12,7 +12,9 @@ router.post('/user/login', userService.loginUser.bind(userService));
 router.post('/user/logout', auth, userService.logoutUser.bind(userService));
 router.get('/user/:id/:type', userService.getById.bind(userService))
 router.put('/user/movieUpdate', userService.updateMovieViewCount.bind(userService))
+router.put('/user/updateCount', userService.updateCount.bind(userService))
 router.delete('/user/movieDelete', auth, userService.deleteMovie.bind(userService))
+router.delete('/user/deleteItem', userService.deleteItem.bind(userService))
 
 router.get("/movies", movieService.getAll.bind(movieService))
 router.get("/movies/:movieId", movieService.getById.bind(movieService))
