@@ -2,7 +2,7 @@ const Movie = require('../models/movie.model')
 
 module.exports = {
   async addMovie(req, res, next) {
-    let movie = await Movie.findOne({ movieDBID: req.body.movie.id})
+    let movie = await Movie.findOne({ movieDBID: req.body.movie.id })
     if (movie) {
       req.body.movie_id = movie._id
       next()
@@ -21,7 +21,8 @@ module.exports = {
           if (err) {
             return res.status(500).send(err)
           }
-          req.body.movie_id = movie._id
+          req.body.item_id = movie._id
+          req.body.media_type = 'movies'
           next()
         })
       } catch (e) {
@@ -39,21 +40,6 @@ module.exports = {
       .exec((err, movie) => {
         this._handleResponse(err, movie, res)
       })
-  },
-  async updateViews(req, res) {
-    const id = req.params.movieId
-    try {
-      const movie = await Movie.findById(id)
-      movie.timesViewed++;
-      movie.updatedAt = Date.now()
-      await movie.save()
-      if (!movie) {
-        return res.status(404).send();
-      }
-      res.send(movie);
-    } catch (e) {
-      res.status(500).send()
-    }
   },
   deleteMovie(req, res) {
     const id = req.params.movieID;

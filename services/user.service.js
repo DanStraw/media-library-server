@@ -68,49 +68,26 @@ module.exports = {
       res.status(500).send();
     }
   },
-  async addMovieToUser(req, res) {
+  async addToUserLibrary(req, res) {
     try {
-      const userMovie = {
-        itemInfo: req.body.movie_id,
+      const newItem = {
+        itemInfo: req.body.item_id,
         format: req.body.format,
         updated_at: new Date().getTime()
       }
       const user = await User.findOne({ _id: req.body.user._id })
-      user.movies.push(userMovie)
-      user.save()
-      res.status(201).send(user)
-    } catch (e) {
-      return res.status(500).send(e)
-    }
-  },
-  async addBookToUser(req, res) {
-    try {
-      const userBook = {
-        itemInfo: req.body.book_id,
-        format: req.body.format,
-        updated_at: new Date().getTime()
-      }
-      const user = await User.findOne({ _id: req.body.user._id })
-      user.books.push(userBook)
-      user.save()
-      res.status(201).send(user)
-    } catch (e) {
-      return res.status(500).send(e)
-    }
-  },
-  async updateMovieViewCount(req, res) {
-    try {
-      const user = await User.findById(req.body.user._id)
-      user.movies.forEach((movie, i) => {
-        if (movie._id == req.body.movieId) {
-          user.movies[i].viewCount++;
-          user.movies[i].updated_at = new Date().getTime();
+      const existingItem = user[req.body.media_type].forEach(item => {
+        if (item.itemInfo === newItem.itemInfo) {
+          return item
         }
       })
+      if (!existingItem) {
+        user[req.body.media_type].push(newItem)
+      }
       user.save()
       res.status(201).send(user)
     } catch (e) {
-      res.status(500).send(e)
+      return res.status(500).send(e)
     }
   },
   async updateCount(req, res) {
@@ -129,11 +106,6 @@ module.exports = {
     } catch (e) {
       return res.status(500).send(e)
     }
-  },
-  async deleteMovie(req, res) {
-    req.body.user.movies = req.body.user.movies.filter(movie => movie._id != req.body.movieId)
-    req.body.user.save()
-    res.send(req.body.user)
   },
   async deleteItem(req, res) {
     try {

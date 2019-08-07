@@ -11,17 +11,13 @@ router.get('/users', userService.getAll.bind(userService));
 router.post('/user/login', userService.loginUser.bind(userService));
 router.post('/user/logout', auth, userService.logoutUser.bind(userService));
 router.get('/user/:id/:type', userService.getById.bind(userService))
-router.put('/user/movieUpdate', userService.updateMovieViewCount.bind(userService))
 router.put('/user/updateCount', userService.updateCount.bind(userService))
-router.delete('/user/movieDelete', auth, userService.deleteMovie.bind(userService))
 router.delete('/user/deleteItem', userService.deleteItem.bind(userService))
 
 router.get("/movies", movieService.getAll.bind(movieService))
 router.get("/movies/:movieId", movieService.getById.bind(movieService))
-router.put("/movies/:movieId", movieService.updateViews.bind(movieService))
-router.post("/movies", auth, movieService.addMovie.bind(movieService), userService.addMovieToUser.bind(userService))
-router.delete('/movies/:movieID', movieService.deleteMovie.bind(movieService))
+router.post("/movies", auth, movieService.addMovie.bind(movieService), userService.addToUserLibrary.bind(userService))
 
-router.post('/books', auth, bookService.addBook.bind(bookService), userService.addBookToUser.bind(userService))
+router.post('/books', auth, bookService.addBook.bind(bookService), userService.addToUserLibrary.bind(userService))
 
 module.exports = router

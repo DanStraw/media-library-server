@@ -1,5 +1,4 @@
 const Book = require('../models/book.model')
-const User = require('../models/user.model')
 
 module.exports = {
   async addBook(req, res, next) {
@@ -25,15 +24,13 @@ module.exports = {
           if (err) {
             return res.status(500).send(err)
           }
-          req.body.book_id = book._id
+          req.body.item_id = book._id
+          req.body.media_type = "books"
           next()
         })
       } catch (e) {
         res.status(400).send();
       }
     }
-  },
-  async updateBookReadCount(req, res) {
-
   }
 }
