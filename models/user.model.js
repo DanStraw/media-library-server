@@ -71,6 +71,21 @@ const userSchema = new mongoose.Schema({
         type: String
       }
     }
+  ],
+  albums: [
+    {
+      itemInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'Album' },
+      listenCount: {
+        type: Number,
+        default: 0
+      },
+      updated_at: {
+        type: Number
+      },
+      format: {
+        type: String
+      }
+    }
   ]
 },
   {
