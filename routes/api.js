@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const albumService = require('../services/album.service');
 const bookService = require('../services/book.service');
+const gameService = require('../services/game.service');
 const movieService = require('../services/movie.service');
 const userService = require('../services/user.service');
 
@@ -11,6 +12,8 @@ router.post("/albums", auth, albumService.addAlbum.bind(albumService), userServi
 router.post("/albums/datalist", albumService.generateDatalist.bind(albumService));
 
 router.post('/books', auth, bookService.addBook.bind(bookService), userService.addToUserLibrary.bind(userService));
+
+router.post("/games", auth, gameService.addGame.bind(gameService), userService.addToUserLibrary.bind(userService));
 
 router.get("/movies", movieService.getAll.bind(movieService));
 router.get("/movies/:movieId", movieService.getById.bind(movieService));

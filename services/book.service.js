@@ -4,7 +4,8 @@ module.exports = {
   async addBook(req, res, next) {
     let book = await Book.findOne({ bookDBID: req.body.book.id })
     if (book) {
-      req.body.book_id = book._id
+      req.body.item_id = book._id
+      req.body.media_type = 'books'
       next()
     } else {
       book = new Book({

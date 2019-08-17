@@ -76,12 +76,16 @@ module.exports = {
         updated_at: new Date().getTime()
       }
       const user = await User.findOne({ _id: req.body.user._id })
-      const existingItem = user[req.body.media_type].forEach(item => {
-        if (item.itemInfo === newItem.itemInfo) {
-          return item
+      if (user[req.body.media_type]) {
+        const existingItem = user[req.body.media_type].forEach(item => {
+          if (item.itemInfo === newItem.itemInfo) {
+            return item
+          }
+        })
+        if (!existingItem) {
+          user[req.body.media_type].push(newItem)
         }
-      })
-      if (!existingItem) {
+      } else {
         user[req.body.media_type].push(newItem)
       }
       user.save()
