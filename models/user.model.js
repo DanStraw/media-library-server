@@ -86,6 +86,21 @@ const userSchema = new mongoose.Schema({
         type: String
       }
     }
+  ],
+  games: [
+    {
+      itemInfo: { type: mongoose.Schema.Types.ObjectId, ref: 'Game' },
+      playCount: {
+        type: Number,
+        default: 0
+      },
+      updated_at: {
+        type: Number
+      },
+      format: String
+    }
+
+
   ]
 },
   {

@@ -14,6 +14,7 @@ router.post("/albums/datalist", albumService.generateDatalist.bind(albumService)
 router.post('/books', auth, bookService.addBook.bind(bookService), userService.addToUserLibrary.bind(userService));
 
 router.post("/games", auth, gameService.addGame.bind(gameService), userService.addToUserLibrary.bind(userService));
+router.post('/games/datalist', gameService.generateDatalist.bind(gameService));
 
 router.get("/movies", movieService.getAll.bind(movieService));
 router.get("/movies/:movieId", movieService.getById.bind(movieService));
