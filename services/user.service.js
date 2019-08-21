@@ -25,12 +25,53 @@ module.exports = {
   },
   async getById(req, res) {
     if (req.params.type === 'all') {
-      User.findOne({ _id: req.params.id })
-        .populate({ path: `movies.itemInfo` }) //add populate of other libraries here to getAll libraries
-        .exec(async (err, user) => {
-          user = await user.getPublicProfile()
-          this._handleResponse(err, user, res)
-        })
+      let user = await User.findOne({ _id: req.params.id })
+
+      let activeLibraries = ['albums', 'books', 'games', 'movies']
+      activeLibraries = activeLibraries.filter(library => {
+        return user[`${library}`].length !== 0
+      })
+      switch (activeLibraries.length) {
+        case 4:
+          User.findOne({ _id: req.params.id })
+            .populate({ path: `${activeLibraries[0]}.itemInfo` }).populate({ path: `${activeLibraries[1]}.itemInfo` }).populate({ path: `${activeLibraries[2]}.itemInfo` }).populate({ path: `${activeLibraries[3]}.itemInfo` })
+            .exec(async (err, user) => {
+              user = await user.getPublicProfile()
+              this._handleResponse(err, user, res)
+            })
+          break;
+        case 3:
+          User.findOne({ _id: req.params.id })
+            .populate({ path: `${activeLibraries[0]}.itemInfo` }).populate({ path: `${activeLibraries[1]}.itemInfo` }).populate({ path: `${activeLibraries[2]}.itemInfo` })
+            .exec(async (err, user) => {
+              user = await user.getPublicProfile()
+              this._handleResponse(err, user, res)
+            })
+          break;
+        case 2:
+          User.findOne({ _id: req.params.id })
+            .populate({ path: `${activeLibraries[0]}.itemInfo` }).populate({ path: `${activeLibraries[1]}.itemInfo` })
+            .exec(async (err, user) => {
+              user = await user.getPublicProfile()
+              this._handleResponse(err, user, res)
+            })
+          break;
+        case 1:
+          User.findOne({ _id: req.params.id })
+            .populate({ path: `${activeLibraries[0]}.itemInfo` })
+            .exec(async (err, user) => {
+              user = await user.getPublicProfile()
+              this._handleResponse(err, user, res)
+            })
+          break;
+        default:
+          User.findOne({ _id: req.params.id })
+            .exec(async (err, user) => {
+              user = await user.getPublicProfile()
+              this._handleResponse(err, user, res)
+            })
+          break;
+      }
     } else {
       let user = await User.findById(req.params.id)
       if (user[req.params.type].length === 0) {
