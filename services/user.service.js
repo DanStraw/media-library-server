@@ -96,7 +96,7 @@ module.exports = {
       const publicUser = await user.getPublicProfile();
       res.send({ user: publicUser, token: token });
     } catch (e) {
-      res.status(400).send();
+      res.status(400).send(e);
     }
   },
   async logoutUser(req, res) {
