@@ -6,10 +6,8 @@ var options = {
 
 module.exports = {
   async addBook(req, res, next) {
-    console.log('addBook req body:', req.body.book)
     booksdb.search(req.body.book, options, async (err, res) => {
       if (err) {
-        console.log('err:', err)
         return err
       }
       if (!res) {
@@ -20,6 +18,7 @@ module.exports = {
       if (book) {
         req.body.item_id = book._id
         req.body.media_type = 'books'
+        req.body.newItemTitle = book.title
         next()
       } else {
         book = new Book({
@@ -41,6 +40,7 @@ module.exports = {
             }
             req.body.item_id = book._id
             req.body.media_type = "books"
+            req.body.newItemTitle = book.title
             next()
           })
         } catch (e) {

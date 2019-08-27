@@ -8,7 +8,7 @@ const spotify = new Spotify({
 
 module.exports = {
   async addAlbum(req, res, next) {
-    spotify.search({ type: 'album', query: req.body.title }, async function (err, data) {
+    spotify.search({ type: 'album', query: req.body.album }, async function (err, data) {
       if (err) {
         return console.log('error occured:', err)
       }

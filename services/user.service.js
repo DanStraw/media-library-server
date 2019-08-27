@@ -130,7 +130,7 @@ module.exports = {
         user[req.body.media_type].push(newItem)
       }
       user.save()
-      res.status(201).send(user)
+      res.status(201).send(req.body.newItemTitle)
     } catch (e) {
       return res.status(500).send(e)
     }

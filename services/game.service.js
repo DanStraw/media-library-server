@@ -16,7 +16,7 @@ const searchIGDBbyId = function (id, endpoint, path) {
       return response.data[0][path]
     })
     .catch(err => {
-      console.error(err);
+      console.log(err);
     });
 }
 
@@ -31,7 +31,7 @@ async function getArrayItems(ids, endpoint, path) {
 
 module.exports = {
   async addGame(req, res, next) {
-    const gameTitle = req.body.title
+    const gameTitle = req.body.game
     try {
       axios({
         url: `https://api-v3.igdb.com/games`,

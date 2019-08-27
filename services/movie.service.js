@@ -3,10 +3,9 @@ const MovieDB = require('moviedb')(process.env.MOVIEDB_API_KEY)
 
 module.exports = {
   async addMovie(req, res, next) {
-    console.log('add Move:', req.body)
-    MovieDB.searchMovie({ query: req.body.title }, async (err, data) => {
+    MovieDB.searchMovie({ query: req.body.movie }, async (err, data) => {
       if (err) {
-        return console.log(err)
+        return console.log('you made an error:', err)
       }
       if (!data.results) {
         return alert('Movie not Found')
@@ -16,6 +15,7 @@ module.exports = {
       if (movie) {
         req.body.item_id = movie._id
         req.body.media_type = 'movies'
+        req.body.newItemTitle = movie.title
         next()
       } else {
         const newMovie = new Movie({
@@ -34,6 +34,7 @@ module.exports = {
             }
             req.body.item_id = newMovie._id
             req.body.media_type = 'movies'
+            req.body.newItemTitle = newMovie.title
             next()
           })
         } catch (e) {
