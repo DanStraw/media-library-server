@@ -13,6 +13,9 @@ module.exports = {
         return console.log('error occured:', err)
       }
       let album = data.albums.items[0]
+      if (!album) {
+        return res.status(400).send()
+      }
       album = {
         title: album.name,
         artists: [],
@@ -28,6 +31,7 @@ module.exports = {
       if (music) {
         req.body.item_id = music._id
         req.body.media_type = "albums"
+        req.body.newItemTitle = music.title
         next()
       }
       else {
@@ -39,6 +43,7 @@ module.exports = {
             }
             req.body.item_id = newAlbum._id
             req.body.media_type = "albums"
+            req.body.newItemTitle = newAlbum.title
             next()
           })
         } catch (e) {

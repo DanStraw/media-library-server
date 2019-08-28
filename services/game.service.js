@@ -59,6 +59,7 @@ module.exports = {
           if (game) {
             req.body.item_id = game._id;
             req.body.media_type = "games"
+            req.body.newItemTitle = game.title
             next()
           } else {
             const newGame = new Game(gameInfo);
@@ -69,6 +70,7 @@ module.exports = {
                 }
                 req.body.item_id = newGame._id;
                 req.body.media_type = "games"
+                req.body.newItemTitle = newGame.title
                 next()
               })
             } catch (e) {
