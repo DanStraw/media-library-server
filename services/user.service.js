@@ -118,13 +118,13 @@ module.exports = {
       }
       const user = await User.findOne({ _id: req.body.user._id })
       if (user[req.body.media_type]) {
-        const existingItem = user[req.body.media_type].forEach(item => {
-          if (item.itemInfo === newItem.itemInfo) {
-            return item
-          }
+        let existingItem = await user[req.body.media_type].filter(item => {
+          return JSON.stringify(item.itemInfo) === JSON.stringify(newItem.itemInfo)
         })
-        if (!existingItem) {
+        if (existingItem.length === 0) {
           user[req.body.media_type].push(newItem)
+        } else {
+          throw new Error('Item Already in Library')
         }
       } else {
         user[req.body.media_type].push(newItem)
@@ -132,7 +132,7 @@ module.exports = {
       user.save()
       res.status(201).send(req.body.newItemTitle)
     } catch (e) {
-      return res.status(500).send(e)
+      res.status(400).send(e)
     }
   },
   async updateCount(req, res) {
