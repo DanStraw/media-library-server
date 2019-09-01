@@ -7,8 +7,8 @@ module.exports = {
       if (err) {
         return console.log('you made an error:', err)
       }
-      if (!data.results) {
-        return alert('Movie not Found')
+      if (data.results.length === 0) {
+        return res.status(411).send('Movie not Found')
       }
       let movieInfo = data.results[0]
       let movie = await Movie.findOne({ movieDBID: movieInfo.id })

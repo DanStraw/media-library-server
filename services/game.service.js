@@ -30,7 +30,7 @@ async function getArrayItems(ids, endpoint, path) {
 }
 
 module.exports = {
-  async addGame(req, res, next) {
+  async addGame(req, response, next) {
     const gameTitle = req.body.game
     try {
       axios({
@@ -43,6 +43,9 @@ module.exports = {
         data: `search "${gameTitle}"; fields name,cover,genres,first_release_date,franchise,platforms,rating,summary;`,
       })
         .then(async (res) => {
+          if (res.data.length === 0) {
+            return response.status(411).send('Game Not Found')
+          }
           let gameInfo = res.data[0]
           gameInfo = {
             title: gameInfo.name,
@@ -79,7 +82,7 @@ module.exports = {
           }
         })
     } catch (e) {
-      return res.status(400).send(e)
+      return response.status(400).send(e)
     }
   },
   async generateDatalist(req, res) {

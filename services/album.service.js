@@ -14,7 +14,7 @@ module.exports = {
       }
       let album = data.albums.items[0]
       if (!album) {
-        return res.status(400).send()
+        return res.status(411).send('Album Not Found')
       }
       album = {
         title: album.name,

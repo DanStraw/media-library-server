@@ -5,13 +5,13 @@ var options = {
 }
 
 module.exports = {
-  async addBook(req, res, next) {
+  async addBook(req, response, next) {
     booksdb.search(req.body.book, options, async (err, res) => {
       if (err) {
         return err
       }
-      if (!res) {
-        return new Error({ message: 'Book not Found' })
+      if (res.length === 0) {
+        return response.status(411).send('Book Not Found')
       }
       const newBook = res[0]
       let book = await Book.findOne({ bookDBID: newBook.id })
