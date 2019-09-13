@@ -28,7 +28,11 @@ router.get('/users', userService.getAll.bind(userService));
 router.post('/user/login', userService.loginUser.bind(userService));
 router.post('/user/logout', auth, userService.logoutUser.bind(userService));
 router.get('/user/:id/:type/:token', auth, userService.getById.bind(userService));
+router.put('/user/oldPassword', auth, userService.checkOldPassword.bind(userService));
+router.put('/user/updatePassword', auth, userService.updatePassword.bind(userService));
+router.put("/user/color", auth, userService.updateColor.bind(userService));
 router.put('/user/updateCount', userService.updateCount.bind(userService));
 router.delete('/user/deleteItem', userService.deleteItem.bind(userService));
+router.delete('/user/:id/:token', auth, userService.deleteUser.bind(userService));
 
 module.exports = router

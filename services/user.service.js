@@ -1,15 +1,17 @@
 const User = require('../models/user.model')
 
-
 module.exports = {
   async createUser(req, res) {
+    console.log('create user', req.body)
     const user = new User(req.body)
     try {
+      console.log('user:', user)
       await user.save()
       const publicUser = await user.getPublicProfile();
       const token = await user.generateAuthToken();
       res.status(201).send({ user: publicUser, token })
     } catch (e) {
+      console.log('create user error:', e)
       res.status(400).send(e);
     }
   },
@@ -135,6 +137,26 @@ module.exports = {
       res.status(409).send(e.message)
     }
   },
+  async checkOldPassword(req, res) {
+    try {
+      const user = await User.findByCredentials(req.body.user.email, req.body.oldPassword);
+      if (user) {
+        res.status(200).send()
+      }
+    } catch (e) {
+      res.status(401).send(e.message)
+    }
+  },
+  async updatePassword(req, res) {
+    try {
+      const user = await User.findByCredentials(req.body.user.email, req.body.oldPassword)
+      user.password = req.body.newPassword
+      user.save()
+      res.status(200).send()
+    } catch (e) {
+      res.status(401).send(e.message)
+    }
+  },
   async updateCount(req, res) {
     try {
       const _item_id = req.body._item_id
@@ -162,6 +184,30 @@ module.exports = {
       res.send(user)
     } catch (e) {
       return res.status(500).send(e)
+    }
+  },
+  async deleteUser(req, res) {
+    try {
+      const user = await User.findByIdAndRemove(req.params.id, (err, data) => {
+        if (err) {
+          res.status(401).send(err)
+        } else {
+          res.status(204).send(`${data} deleted`)
+        }
+      })
+    } catch (e) {
+
+      res.status(401).send(e)
+    }
+  },
+  async updateColor(req, res) {
+    try {
+      let user = await User.findById(req.body.userId)
+      user.color = req.body.color;
+      user.save()
+      return res.status(200).send(user)
+    } catch (e) {
+      return res.status(400).send(e)
     }
   },
   _handleResponse(err, data, res) {

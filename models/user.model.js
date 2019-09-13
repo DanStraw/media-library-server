@@ -99,9 +99,11 @@ const userSchema = new mongoose.Schema({
       },
       format: String
     }
-
-
-  ]
+  ],
+  color: {
+    type: String,
+    default: 'success'
+  }
 },
   {
     timestamps: true
@@ -142,7 +144,6 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
-
   next();
 });
 
